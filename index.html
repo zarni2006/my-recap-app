@@ -24,9 +24,9 @@
         
         <!-- Password Section -->
         <div style="background: #eeeeee; padding: 10px; border-radius: 8px; border: 1px solid #000000; margin-bottom: 10px;">
-            <label style="font-size: 11px; color: #000000; font-weight: bold;">🔒 စကားဝှက် (Admin / One-Time Token):</label>
+            <label style="font-size: 11px; color: #000000; font-weight: bold;">🔒 စကားဝှက် (zar200614) သို့မဟုတ် One-Time Token:</label>
             <input type="password" id="adminPassword" placeholder="စကားဝှက် ထည့်ပါ..." oninput="checkAccess()">
-            <p id="accessStatus" style="font-size: 11px; color: #666; margin: 2px 0 0 0;">ℹ️ Standard Mode (တစ်နေ့ ၃ ကြိမ်)</p>
+            <p id="accessStatus" style="font-size: 11px; color: #666; margin: 2px 0 0 0;">ℹ️ Standard Mode (တစ်နေ့ ဗီဒီယို ၃ ထုတ်ခွင့်)</p>
         </div>
 
         <label style="font-size: 12px; font-weight: bold;">ဗီဒီယို လင့်ခ် (သို့မဟုတ်) စာသား ထည့်ပါ:</label>
@@ -34,7 +34,7 @@
 
         <label style="font-size: 12px; font-weight: bold;">🎭 အသံအမျိုးအစား ရွေးချယ်ရန်:</label>
         <select id="voiceSelect">
-            <option value="Nandar">Nandar - News (သတင်း / ပင်မအသံ)</option>
+            <option value="Nandar">Nandar - News (သတင်း / ပင်မအသံ - မပါမဖြစ်)</option>
             <option value="Kyaw">Kyaw - Sports Live (အားကစား / အက်ရှင်)</option>
             <option value="Zaw">Zaw - Sports (ကြမ်းတမ်းသော အသံ)</option>
             <option value="Nay">Nay - Match Recap (ရုပ်ရှင်ဇာတ်လမ်းပြော)</option>
@@ -63,7 +63,6 @@
     </div>
 
 <script>
-    // သတ်မှတ်ထားသော စကားဝှက်
     const OWNER_PASSWORD = "zar200614";
 
     function checkAccess() {
@@ -79,7 +78,7 @@
             status.innerText = "✅ One-Time Token ဖြင့် ဝင်ရောက်ထားသည်";
         } else {
             status.style.color = "#666666";
-            status.innerText = "ℹ️ Standard Mode (တစ်နေ့ ၃ ကြိမ် သို့မဟုတ် သော့ထည့်ပါ)";
+            status.innerText = "ℹ️ Standard Mode (တစ်နေ့ ဗီဒီယို ၃ ထုတ်ခွင့်)";
         }
     }
 
@@ -94,14 +93,21 @@
             return;
         }
 
-        // Owner စကားဝှက် (zar200614) မှန်ကန်ပါက ကန့်သတ်ချက်မရှိ အလွတ်သုံးခွင့်ပေးမည်
+        // Owner စကားဝှက် zar200614 ဖြင့် ကန့်သတ်ချက်မရှိ အလွတ်သုံးခွင့်
         if (pass === OWNER_PASSWORD) {
             msg.style.color = "#000000";
             msg.innerText = "✅ အောင်မြင်ပါသည်။ (Owner အဖြစ် အကန့်အသတ်မရှိ ထုတ်ယူပြီးပါပြီ - Voice: " + voice + ")";
             return;
         }
 
-        // အခြားသူများအတွက် တစ်နေ့ ဗီဒီယို ၃ ကြိမ် (သို့မဟုတ် တစ်ခါသုံးသော့) ကန့်သတ်ချက်
+        // တစ်ခါသုံးသော့ (One-Time Token) ဖြင့် ဝင်ရောက်ခြင်း
+        if (pass.startsWith("TOKEN-")) {
+            msg.style.color = "#000000";
+            msg.innerText = "✅ One-Time Token ဖြင့် အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ။ (Voice: " + voice + ")";
+            return;
+        }
+
+        // သာမန်သုံးစွဲသူများအတွက် တစ်နေ့ ဗီဒီယို ၃ ကြိမ် ကန့်သတ်ချက်
         const today = new Date().toISOString().slice(0, 10);
         let usage = JSON.parse(localStorage.getItem('user_usage') || '{}');
 
@@ -109,15 +115,9 @@
             usage = { date: today, count: 0 };
         }
 
-        if (pass.startsWith("TOKEN-")) {
-            msg.style.color = "#000000";
-            msg.innerText = "✅ One-Time Token ဖြင့် အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ။ (Voice: " + voice + ")";
-            return;
-        }
-
         if (usage.count >= 3) {
             msg.style.color = "#ff0000";
-            msg.innerText = "❌ ဒီနေ့အတွက် အခမဲ့ ခွဲတမ်း (ဗီဒီယို ၃ ကြိမ်) ပြည့်သွားပါပြီ။ One-Time Token ထည့်ပါ သို့မဟုတ် Owner စကားဝှက်သုံးပါ။";
+            msg.innerText = "❌ ဒီနေ့အတွက် အခမဲ့ ခွဲတမ်း (ဗီဒီယို ၃ ကြိမ်) ပြည့်သွားပါပြီ။ One-Time Token သို့မဟုတ် Owner စကားဝှက် (zar200614) ထည့်ပါ။";
             return;
         }
 
@@ -129,5 +129,5 @@
 </script>
 
 </body>
-    </html>
-    
+            </html>
+            
