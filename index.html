@@ -3,53 +3,98 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Video Recap & AI Voice Tools</title>
+    <title>AI Video Recap & Tools</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; text-align: center; }
-        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
-        input, button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
-        button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
-        .admin-box { background: #e9ecef; padding: 10px; margin-top: 15px; border-radius: 6px; }
+        body { font-family: sans-serif; background: #0f1016; color: white; margin: 0; padding: 15px; }
+        h2 { font-size: 18px; margin-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .card { background: #1a1b26; padding: 15px; border-radius: 12px; border: 1px solid #2f3248; cursor: pointer; position: relative; }
+        .card h3 { font-size: 14px; margin: 0 0 5px 0; color: #fff; }
+        .card p { font-size: 11px; color: #9ca3af; margin: 0; }
+        .lock { position: absolute; top: 10px; right: 10px; font-size: 12px; }
+        .full-card { background: #1a1b26; padding: 15px; border-radius: 12px; border: 1px solid #2f3248; margin-bottom: 10px; cursor: pointer; }
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #13141f; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #2f3248; }
+        .nav-item { font-size: 11px; color: #9ca3af; text-align: center; text-decoration: none; }
+        .nav-item.active { color: #a855f7; }
+        input { width: 100%; padding: 10px; margin: 10px 0; background: #2f3248; border: none; color: white; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="card">
-    <h2>AI Video Recap Generator</h2>
-    <p>ဗီဒီယို လင့်ခ် ထည့်ပါ-</p>
-    <input type="text" id="videoUrl" placeholder="TikTok သို့မဟုတ် YouTube Link...">
-    <button onclick="processVideo()">စာသားနှင့် အသံ ထုတ်မည်</button>
-
-    <div class="admin-box">
-        <label><input type="checkbox" id="isAdmin"> Owner / Admin Mode (ကန့်သတ်ချက်မရှိ)</label>
+    <h2>အသုံးများသော AI Tool များ</h2>
+    <div class="grid">
+        <div class="card" onclick="openTool('One Click Recap')">
+            <span class="lock">🔓</span>
+            <h3>One Click Recap</h3>
+            <p>မည်သည့်ဗီဒီယိုကိုမဆို...</p>
+        </div>
+        <div class="card" onclick="openTool('AI အသံ')">
+            <span class="lock">🔒</span>
+            <h3>AI အသံ</h3>
+            <p>စာသားကို အသံသို့ ပြောင်း...</p>
+        </div>
+        <div class="card" onclick="openTool('အသံတုပြုခြင်း')">
+            <span class="lock">🔒</span>
+            <h3>အသံတုပြုခြင်း</h3>
+            <p>သင့်ကိုယ်ပိုင်အသံကို...</p>
+        </div>
+        <div class="card" onclick="openTool('ဇာတ်ညွှန်း ရေးပေးစနစ်')">
+            <span class="lock">🔒</span>
+            <h3>ဇာတ်ညွှန်း ရေးပေးစနစ်</h3>
+            <p>ခေါင်းစဉ် တစ်ခု ပေးလိုက်...</p>
+        </div>
     </div>
 
-    <div id="result" style="margin-top: 15px; font-weight: bold; color: green;"></div>
-</div>
+    <h2>အခြား Tool များ</h2>
+    <div class="full-card" onclick="openTool('အသံစာအုပ်')">
+        <h3>📚 အသံစာအုပ်</h3>
+        <p>PDF/TXT စာအုပ်ကို အသံစာအုပ် ဗီဒီယိုလုပ်မယ်</p>
+    </div>
+    <div class="full-card" onclick="openTool('Subtitle Video')">
+        <h3>🎬 Subtitle Video</h3>
+        <p>ဗီဒီယိုတွင် အလိုအလျောက် စာတန်းထိုးထည့်သွင်း...</p>
+    </div>
+
+    <div id="toolModal" style="display:none; background:#1a1b26; padding:15px; border-radius:12px; margin-top:20px; border:1px solid #3b82f6;">
+        <h3 id="modalTitle">Tool</h3>
+        <input type="text" id="videoUrl" placeholder="ဗီဒီယို လင့်ခ် ထည့်ပါ...">
+        <button onclick="processAction()">စတင်ထုတ်ယူမည်</button>
+        <p id="resultMsg" style="margin-top:10px; font-size:12px; color:#22c55e;"></p>
+    </div>
+
+    <div style="height: 60px;"></div>
+
+    <div class="nav">
+        <a href="#" class="nav-item active">🏠<br>ပင်မစာမျက်နှာ</a>
+        <a href="#" class="nav-item">📊<br>အသုံးပြုမှု</a>
+        <a href="#" class="nav-item">💳<br>ပလပ်များ</a>
+        <a href="#" class="nav-item">👤<br>ပရိုဖိုင်</a>
+    </div>
 
 <script>
-    function processVideo() {
-        const isAdmin = document.getElementById('isAdmin').checked;
+    function openTool(toolName) {
+        document.getElementById('toolModal').style.display = 'block';
+        document.getElementById('modalTitle').innerText = toolName;
+        document.getElementById('resultMsg').innerText = '';
+    }
+
+    function processAction() {
         const today = new Date().toISOString().slice(0, 10);
-        let usageData = JSON.parse(localStorage.getItem('user_usage') || '{}');
+        let usage = JSON.parse(localStorage.getItem('user_usage') || '{}');
 
-        if (isAdmin) {
-            document.getElementById('result').innerText = "✅ Owner အဖြစ် အကန့်အသတ်မရှိ အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ။";
+        if (usage.date === today && usage.count >= 1) {
+            alert("⚠️ ဒီနေ့အတွက် အခမဲ့ ၁ ကြိမ် သုံးစွဲမှု ပြည့်သွားပါပြီ။");
+            document.getElementById('resultMsg').innerText = "❌ ခွဲတမ်းပြည့်သွားပါပြီ။";
             return;
         }
 
-        if (usageData.date === today && usageData.count >= 1) {
-            alert("⚠️ သင် ဒီနေ့အတွက် ၁ ကြိမ်/တစ်ပိုဒ် အခမဲ့ ခွဲတမ်း ပြည့်သွားပါပြီ။ မနက်ဖြန်မှ ပြန်သုံးပါ။");
-            document.getElementById('result').innerText = "❌ တစ်နေ့ ၁ ကြိမ် ကန့်သတ်ချက် ပြည့်သွားပါပြီ။";
-            return;
-        }
-
-        usageData = { date: today, count: (usageData.count || 0) + 1 };
-        localStorage.setItem('user_usage', JSON.stringify(usageData));
-        document.getElementById('result').innerText = "✅ စာသားနှင့် အသံ ထုတ်ယူမှု အောင်မြင်ပါသည်။ (ဒီနေ့အတွက် အခမဲ့ ၁ ကြိမ် သုံးပြီးပါပြီ)";
+        usage = { date: today, count: (usage.count || 0) + 1 };
+        localStorage.setItem('user_usage', JSON.stringify(usage));
+        document.getElementById('resultMsg').innerText = "✅ အောင်မြင်ပါသည်။ (ဒီနေ့အတွက် ၁ ကြိမ် သုံးပြီးပါပြီ)";
     }
 </script>
 
 </body>
-      </html>
-      
+    </html>
+
