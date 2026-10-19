@@ -3,98 +3,133 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Video Recap & Tools</title>
+    <title>Burma Voice - AI Video Recap & Voice Studio</title>
     <style>
         body { font-family: sans-serif; background: #0f1016; color: white; margin: 0; padding: 15px; }
-        h2 { font-size: 18px; margin-bottom: 10px; }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .card { background: #1a1b26; padding: 15px; border-radius: 12px; border: 1px solid #2f3248; cursor: pointer; position: relative; }
-        .card h3 { font-size: 14px; margin: 0 0 5px 0; color: #fff; }
-        .card p { font-size: 11px; color: #9ca3af; margin: 0; }
-        .lock { position: absolute; top: 10px; right: 10px; font-size: 12px; }
-        .full-card { background: #1a1b26; padding: 15px; border-radius: 12px; border: 1px solid #2f3248; margin-bottom: 10px; cursor: pointer; }
+        h2, h3 { font-size: 16px; margin-bottom: 8px; color: #f3f4f6; }
+        .card { background: #1a1b26; padding: 15px; border-radius: 12px; border: 1px solid #2f3248; margin-bottom: 12px; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; background: #2f3248; border: none; color: white; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        button { background: #3b82f6; font-weight: bold; cursor: pointer; }
+        button:hover { background: #2563eb; }
+        .voice-list { max-height: 150px; overflow-y: auto; background: #13141f; padding: 5px; border-radius: 6px; }
+        .voice-item { padding: 8px; font-size: 12px; border-bottom: 1px solid #2f3248; cursor: pointer; }
+        .voice-item:hover { background: #2f3248; }
         .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #13141f; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #2f3248; }
-        .nav-item { font-size: 11px; color: #9ca3af; text-align: center; text-decoration: none; }
+        .nav-item { font-size: 11px; color: #9ca3af; text-align: center; text-decoration: none; cursor: pointer; }
         .nav-item.active { color: #a855f7; }
-        input { width: 100%; padding: 10px; margin: 10px 0; background: #2f3248; border: none; color: white; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 10px; background: #3b82f6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .badge { background: #22c55e; color: black; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: bold; }
     </style>
 </head>
 <body>
 
-    <h2>အသုံးများသော AI Tool များ</h2>
-    <div class="grid">
-        <div class="card" onclick="openTool('One Click Recap')">
-            <span class="lock">🔓</span>
-            <h3>One Click Recap</h3>
-            <p>မည်သည့်ဗီဒီယိုကိုမဆို...</p>
+    <div class="card">
+        <h2>🎙️ Burma Voice & AI Video Recap Studio</h2>
+        <p style="font-size: 12px; color: #9ca3af;">မူပိုင်ခွင့် (Copyright) ကင်းဝေးစေရန် ကိုယ်ပိုင် AI အသံနှင့် ဇာတ်ကြောင်းပြော ဖန်တီးပါ။</p>
+        
+        <!-- Admin / Password Section -->
+        <div style="background: #13141f; padding: 10px; border-radius: 8px; margin-bottom: 10px;">
+            <label style="font-size: 11px; color: #a855f7;">🔒 Admin / Owner Password (ကန့်သတ်ချက်မရှိသုံးရန်):</label>
+            <input type="password" id="adminPassword" placeholder="စကားဝှက် ထည့်ပါ..." oninput="checkAdmin()">
+            <p id="adminStatus" style="font-size: 11px; color: #ef4444; margin: 2px 0 0 0;">❌ Standard Mode (တစ်နေ့ ၁ ကြိမ်)</p>
         </div>
-        <div class="card" onclick="openTool('AI အသံ')">
-            <span class="lock">🔒</span>
-            <h3>AI အသံ</h3>
-            <p>စာသားကို အသံသို့ ပြောင်း...</p>
-        </div>
-        <div class="card" onclick="openTool('အသံတုပြုခြင်း')">
-            <span class="lock">🔒</span>
-            <h3>အသံတုပြုခြင်း</h3>
-            <p>သင့်ကိုယ်ပိုင်အသံကို...</p>
-        </div>
-        <div class="card" onclick="openTool('ဇာတ်ညွှန်း ရေးပေးစနစ်')">
-            <span class="lock">🔒</span>
-            <h3>ဇာတ်ညွှန်း ရေးပေးစနစ်</h3>
-            <p>ခေါင်းစဉ် တစ်ခု ပေးလိုက်...</p>
-        </div>
-    </div>
 
-    <h2>အခြား Tool များ</h2>
-    <div class="full-card" onclick="openTool('အသံစာအုပ်')">
-        <h3>📚 အသံစာအုပ်</h3>
-        <p>PDF/TXT စာအုပ်ကို အသံစာအုပ် ဗီဒီယိုလုပ်မယ်</p>
-    </div>
-    <div class="full-card" onclick="openTool('Subtitle Video')">
-        <h3>🎬 Subtitle Video</h3>
-        <p>ဗီဒီယိုတွင် အလိုအလျောက် စာတန်းထိုးထည့်သွင်း...</p>
-    </div>
+        <label style="font-size: 12px;">ဗီဒီယို လင့်ခ် (သို့မဟုတ်) စာသား ထည့်ပါ:</label>
+        <input type="text" id="videoUrl" placeholder="TikTok / YouTube Link...">
 
-    <div id="toolModal" style="display:none; background:#1a1b26; padding:15px; border-radius:12px; margin-top:20px; border:1px solid #3b82f6;">
-        <h3 id="modalTitle">Tool</h3>
-        <input type="text" id="videoUrl" placeholder="ဗီဒီယို လင့်ခ် ထည့်ပါ...">
-        <button onclick="processAction()">စတင်ထုတ်ယူမည်</button>
-        <p id="resultMsg" style="margin-top:10px; font-size:12px; color:#22c55e;"></p>
+        <label style="font-size: 12px;">🎭 အသံအမျိုးအစား ရွေးချယ်ရန် (100+ AI Voices):</label>
+        <select id="voiceSelect">
+            <option value="Kyaw">Kyaw - Sports Live (အားကစား / အက်ရှင်)</option>
+            <option value="Nandar">Nandar - News (သတင်း / စာဖတ်)</option>
+            <option value="Zaw">Zaw - Sports (ကြမ်းတမ်းသော အသံ)</option>
+            <option value="Nay">Nay - Match Recap (ရုပ်ရှင်ဇာတ်လမ်းပြော)</option>
+            <option value="Thant">Thant - Audiobook (နားထောင်ကောင်းသော အသံ)</option>
+            <option value="Thura">Thura - Memorist (အမှတ်တရ ဇာတ်ကြောင်း)</option>
+            <option value="SiThu">SiThu - Action Narrator (စိတ်လှုပ်ရှားဖွယ်)</option>
+            <option value="Lin">Lin - Storyteller (ကာတွန်း / ပုံပြင်)</option>
+            <option value="Hla">Hla - Nostalgia (ခေတ်ဟောင်း အလွမ်းပြေ)</option>
+            <option value="Wai">Wai - Female (သဘာဝဆန်သော အမျိုးသမီးအသံ)</option>
+            <option value="Pyae">Pyae - Male (အမျိုးသား အသံသန့်)</option>
+            <option value="Phyo">Phyo - Game Coach</option>
+            <option value="May">May - Flash Promo</option>
+            <option value="Mya">Mya - Cooking</option>
+            <option value="Min">Min - Education</option>
+            <option value="Thiri">Thiri - Meditation</option>
+            <option value="Hein">Hein - Kids</option>
+            <option value="Aung">Aung - Angry</option>
+            <option value="Nyan">Nyan - Confession</option>
+            <option value="Ye">Ye - Conspirator</option>
+            <option value="Naing">Naing - Boss</option>
+            <option value="Soe">Soe - Late Night</option>
+            <option value="Htet">Htet - Street Alert</option>
+            <option value="Khin">Khin - Neighborhood</option>
+            <option value="Honey">Honey - Tea Time</option>
+            <option value="Hnin">Hnin - Ghost Story</option>
+        </select>
+
+        <button onclick="processRecap()">🚀 စာသားနှင့် အသံ ထုတ်ယူမည်</button>
+        <p id="resultMsg" style="margin-top: 10px; font-size: 12px; font-weight: bold;"></p>
     </div>
 
     <div style="height: 60px;"></div>
 
     <div class="nav">
-        <a href="#" class="nav-item active">🏠<br>ပင်မစာမျက်နှာ</a>
-        <a href="#" class="nav-item">📊<br>အသုံးပြုမှု</a>
-        <a href="#" class="nav-item">💳<br>ပလပ်များ</a>
-        <a href="#" class="nav-item">👤<br>ပရိုဖိုင်</a>
+        <a class="nav-item active">🏠<br>ပင်မစာမျက်နှာ</a>
+        <a class="nav-item">🎙️<br>အသံ Studio</a>
+        <a class="nav-item">💳<br>ပလပ်များ</a>
+        <a class="nav-item">👤<br>ပရိုဖိုင်</a>
     </div>
 
 <script>
-    function openTool(toolName) {
-        document.getElementById('toolModal').style.display = 'block';
-        document.getElementById('modalTitle').innerText = toolName;
-        document.getElementById('resultMsg').innerText = '';
+    // သင့်ရဲ့ ကိုယ်ပိုင် Admin စကားဝှက်ကို ဒီမှာ သတ်မှတ်ပါ (ဥပမာ - myanmar2026)
+    const SECRET_ADMIN_PASS = "myanmar2026";
+
+    function checkAdmin() {
+        const pass = document.getElementById('adminPassword').value;
+        const status = document.getElementById('adminStatus');
+        if (pass === SECRET_ADMIN_PASS) {
+            status.style.color = "#22c55e";
+            status.innerText = "✅ Admin Mode (ကန့်သတ်ချက်မရှိ အလွတ်သုံးနိုင်သည်)";
+        } else {
+            status.style.color = "#ef4444";
+            status.innerText = "❌ Standard Mode (တစ်နေ့ ၁ ကြိမ် ကန့်သတ်ထားသည်)";
+        }
     }
 
-    function processAction() {
+    function processRecap() {
+        const pass = document.getElementById('adminPassword').value;
+        const url = document.getElementById('videoUrl').value;
+        const voice = document.getElementById('voiceSelect').value;
+        const msg = document.getElementById('resultMsg');
+
+        if (!url) {
+            alert("ကျေးဇူးပြု၍ ဗီဒီယို လင့်ခ် (သို့မဟုတ်) စာသား ထည့်ပါ။");
+            return;
+        }
+
+        // Admin ဖြစ်လျှင် ကန့်သတ်ချက် မရှိ စေရ
+        if (pass === SECRET_ADMIN_PASS) {
+            msg.style.color = "#22c55e";
+            msg.innerText = "✅ Admin အဖြစ် အကန့်အသတ်မရှိ အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ။ (အသံအမျိုးအစား: " + voice + ")";
+            return;
+        }
+
+        // සාမန်သုံးစွဲသူများအတွက် တစ်နေ့ ၁ ကြိမ် ကန့်သတ်ချက်
         const today = new Date().toISOString().slice(0, 10);
         let usage = JSON.parse(localStorage.getItem('user_usage') || '{}');
 
         if (usage.date === today && usage.count >= 1) {
-            alert("⚠️ ဒီနေ့အတွက် အခမဲ့ ၁ ကြိမ် သုံးစွဲမှု ပြည့်သွားပါပြီ။");
-            document.getElementById('resultMsg').innerText = "❌ ခွဲတမ်းပြည့်သွားပါပြီ။";
+            msg.style.color = "#ef4444";
+            msg.innerText = "❌ ဒီနေ့အတွက် အခမဲ့ ၁ ကြိမ် သုံးစွဲမှု ပြည့်သွားပါပြီ။ Admin စကားဝှက် ထည့်ပါ သို့မဟုတ် မနက်ဖြန်မှ ပြန်သုံးပါ။";
             return;
         }
 
         usage = { date: today, count: (usage.count || 0) + 1 };
         localStorage.setItem('user_usage', JSON.stringify(usage));
-        document.getElementById('resultMsg').innerText = "✅ အောင်မြင်ပါသည်။ (ဒီနေ့အတွက် ၁ ကြိမ် သုံးပြီးပါပြီ)";
+        msg.style.color = "#22c55e";
+        msg.innerText = "✅ အောင်မြင်ပါသည်။ (ဒီနေ့အတွက် အခမဲ့ ၁ ကြိမ် သုံးပြီးပါပြီ - Voice: " + voice + ")";
     }
 </script>
 
 </body>
-    </html>
-
+                </html>
+                
