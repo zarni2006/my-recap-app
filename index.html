@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Recap & AI Voice Tools</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f4f4f9; text-align: center; }
+        .card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); max-width: 400px; margin: auto; }
+        input, button { width: 100%; padding: 10px; margin: 8px 0; border-radius: 6px; border: 1px solid #ccc; box-sizing: border-box; }
+        button { background: #007bff; color: white; border: none; font-weight: bold; cursor: pointer; }
+        .admin-box { background: #e9ecef; padding: 10px; margin-top: 15px; border-radius: 6px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>AI Video Recap Generator</h2>
+    <p>ဗီဒီယို လင့်ခ် ထည့်ပါ-</p>
+    <input type="text" id="videoUrl" placeholder="TikTok သို့မဟုတ် YouTube Link...">
+    <button onclick="processVideo()">စာသားနှင့် အသံ ထုတ်မည်</button>
+
+    <div class="admin-box">
+        <label><input type="checkbox" id="isAdmin"> Owner / Admin Mode (ကန့်သတ်ချက်မရှိ)</label>
+    </div>
+
+    <div id="result" style="margin-top: 15px; font-weight: bold; color: green;"></div>
+</div>
+
+<script>
+    function processVideo() {
+        const isAdmin = document.getElementById('isAdmin').checked;
+        const today = new Date().toISOString().slice(0, 10);
+        let usageData = JSON.parse(localStorage.getItem('user_usage') || '{}');
+
+        if (isAdmin) {
+            document.getElementById('result').innerText = "✅ Owner အဖြစ် အကန့်အသတ်မရှိ အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ။";
+            return;
+        }
+
+        if (usageData.date === today && usageData.count >= 1) {
+            alert("⚠️ သင် ဒီနေ့အတွက် ၁ ကြိမ်/တစ်ပိုဒ် အခမဲ့ ခွဲတမ်း ပြည့်သွားပါပြီ။ မနက်ဖြန်မှ ပြန်သုံးပါ။");
+            document.getElementById('result').innerText = "❌ တစ်နေ့ ၁ ကြိမ် ကန့်သတ်ချက် ပြည့်သွားပါပြီ။";
+            return;
+        }
+
+        usageData = { date: today, count: (usageData.count || 0) + 1 };
+        localStorage.setItem('user_usage', JSON.stringify(usageData));
+        document.getElementById('result').innerText = "✅ စာသားနှင့် အသံ ထုတ်ယူမှု အောင်မြင်ပါသည်။ (ဒီနေ့အတွက် အခမဲ့ ၁ ကြိမ် သုံးပြီးပါပြီ)";
+    }
+</script>
+
+</body>
+      </html>
+      
