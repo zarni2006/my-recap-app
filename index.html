@@ -5,85 +5,158 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Burma Voice - AI Video Recap & Voice Studio</title>
     <style>
-        body { font-family: sans-serif; background: #ffffff; color: #000000; margin: 0; padding: 15px; }
+        body { font-family: sans-serif; background: #ffffff; color: #000000; margin: 0; padding: 15px; padding-bottom: 70px; }
         h2, h3 { font-size: 16px; margin-bottom: 8px; color: #000000; }
         .card { background: #f9f9f9; padding: 15px; border-radius: 12px; border: 1px solid #000000; margin-bottom: 12px; }
         input, select, button { width: 100%; padding: 12px; margin: 8px 0; background: #ffffff; border: 1px solid #000000; color: #000000; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
         button { background: #000000; color: #ffffff; font-weight: bold; cursor: pointer; }
         button:hover { background: #333333; }
-        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #000000; }
-        .nav-item { font-size: 11px; color: #666666; text-align: center; text-decoration: none; cursor: pointer; }
+        .nav { position: fixed; bottom: 0; left: 0; right: 0; background: #ffffff; display: flex; justify-content: space-around; padding: 10px; border-top: 1px solid #000000; z-index: 100; }
+        .nav-item { font-size: 11px; color: #666666; text-align: center; text-decoration: none; cursor: pointer; background: none; border: none; padding: 0; }
         .nav-item.active { color: #000000; font-weight: bold; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .history-item { background: #fff; border: 1px solid #ddd; padding: 10px; border-radius: 8px; margin-bottom: 8px; font-size: 13px; }
     </style>
 </head>
 <body>
 
-    <div class="card">
-        <h2>🎙️ Burma Voice & AI Video Recap Studio</h2>
-        <p style="font-size: 12px; color: #333333;">မူပိုင်ခွင့် (Copyright) ကင်းဝေးစေရန် ကိုယ်ပိုင် AI အသံနှင့် ဇာတ်ကြောင်းပြော ဖန်တီးပါ။</p>
-        
-        <!-- Password Section -->
-        <div style="background: #eeeeee; padding: 10px; border-radius: 8px; border: 1px solid #000000; margin-bottom: 10px;">
-            <label style="font-size: 11px; color: #000000; font-weight: bold;">🔒 စကားဝှက် (zar200614) သို့မဟုတ် One-Time Token:</label>
-            <input type="password" id="adminPassword" placeholder="စကားဝှက် ထည့်ပါ..." oninput="checkAccess()">
-            <p id="accessStatus" style="font-size: 11px; color: #666; margin: 2px 0 0 0;">ℹ️ Standard Mode (တစ်နေ့ ဗီဒီယို ၃ ထုတ်ခွင့်)</p>
+    <!-- 1. LOGIN / WELCOME SCREEN -->
+    <div id="loginScreen" class="card" style="text-align: center; margin-top: 50px;">
+        <h2>🔐 Burma Voice သို့ ကြိုဆိုပါတယ်</h2>
+        <p style="font-size: 12px; color: #555;">စတင်အသုံးပြုရန် Google (Gmail) ဖြင့် ဝင်ရောက်ပါ သို့မဟုတ် Admin စကားဝှက်သုံးပါ။</p>
+        <button onclick="loginWithGoogle()" style="background: #000; color: #fff; margin-top: 15px;">🌐 Gmail ဖြင့် အကောင့်ဝင်မည်</button>
+        <div style="margin-top: 15px;">
+            <input type="password" id="loginPass" placeholder="Admin စကားဝှက် (သို့) Token ထည့်ပါ..." style="text-align: center;">
+            <button onclick="verifyLogin()" style="background: #333;">စကားဝှက်ဖြင့် ဝင်မည်</button>
         </div>
-
-        <label style="font-size: 12px; font-weight: bold;">ဗီဒီယို လင့်ခ် (သို့မဟုတ်) စာသား ထည့်ပါ:</label>
-        <input type="text" id="videoUrl" placeholder="TikTok / YouTube Link...">
-
-        <label style="font-size: 12px; font-weight: bold;">🎭 အသံအမျိုးအစား ရွေးချယ်ရန်:</label>
-        <select id="voiceSelect">
-            <option value="Nandar">Nandar - News (သတင်း / ပင်မအသံ - မပါမဖြစ်)</option>
-            <option value="Kyaw">Kyaw - Sports Live (အားကစား / အက်ရှင်)</option>
-            <option value="Zaw">Zaw - Sports (ကြမ်းတမ်းသော အသံ)</option>
-            <option value="Nay">Nay - Match Recap (ရုပ်ရှင်ဇာတ်လမ်းပြော)</option>
-            <option value="Thant">Thant - Audiobook</option>
-            <option value="Wai">Wai - Female (သဘာဝဆန်သော အမျိုးသမီးအသံ)</option>
-            <option value="Pyae">Pyae - Male (အမျိုးသား အသံသန့်)</option>
-            <option value="Phyo">Phyo - Game Coach</option>
-            <option value="May">May - Flash Promo</option>
-            <option value="Mya">Mya - Cooking</option>
-            <option value="Min">Min - Education</option>
-            <option value="Thiri">Thiri - Meditation</option>
-            <option value="Hein">Hein - Kids</option>
-        </select>
-
-        <button onclick="processRecap()">🚀 စာသားနှင့် အသံ ထုတ်ယူမည်</button>
-        <p id="resultMsg" style="margin-top: 10px; font-size: 12px; font-weight: bold;"></p>
+        <p id="loginMsg" style="font-size: 12px; color: red; margin-top: 5px;"></p>
     </div>
 
-    <div style="height: 60px;"></div>
+    <!-- 2. MAIN APP CONTAINER (Hidden until login) -->
+    <div id="mainApp" style="display: none;">
+        
+        <!-- HOME / RECAP TAB -->
+        <div id="tab-home" class="tab-content active">
+            <div class="card">
+                <h2>🎙️ Burma Voice & AI Video Recap Studio</h2>
+                <p style="font-size: 12px; color: #333333;">မူပိုင်ခွင့် (Copyright) ကင်းဝေးစေရန် ကိုယ်ပိုင် AI အသံနှင့် ဇာတ်ကြောင်းပြော ဖန်တီးပါ။</p>
+                
+                <div style="background: #eeeeee; padding: 10px; border-radius: 8px; border: 1px solid #000000; margin-bottom: 10px;">
+                    <label style="font-size: 11px; color: #000000; font-weight: bold;">🔒 အသုံးပြုခွင့် အခြေအနေ:</label>
+                    <p id="accessStatus" style="font-size: 11px; color: #000; margin: 2px 0 0 0; font-weight: bold;">✅ Owner / Standard Mode</p>
+                </div>
 
-    <div class="nav">
-        <a class="nav-item active">🏠<br>ပင်မစာမျက်နှာ</a>
-        <a class="nav-item">🎙️<br>အသံ Studio</a>
-        <a class="nav-item">💳<br>ပလပ်များ</a>
-        <a class="nav-item">👤<br>ပရိုဖိုင်</a>
+                <label style="font-size: 12px; font-weight: bold;">ဗီဒီယို လင့်ခ် (သို့မဟုတ်) စာသား ထည့်ပါ:</label>
+                <input type="text" id="videoUrl" placeholder="TikTok / YouTube Link...">
+
+                <label style="font-size: 12px; font-weight: bold;">🎭 အသံအမျိုးအစား ရွေးချယ်ရန် (100+ AI Voices):</label>
+                <select id="voiceSelect">
+                    <option value="Nandar">Nandar - News (သတင်း / ပင်မအသံ - မပါမဖြစ်)</option>
+                    <option value="Kyaw">Kyaw - Sports Live (အားကစား / အက်ရှင်)</option>
+                    <option value="Zaw">Zaw - Sports (ကြမ်းတမ်းသော အသံ)</option>
+                    <option value="Nay">Nay - Match Recap (ရုပ်ရှင်ဇာတ်လမ်းပြော)</option>
+                    <option value="Thant">Thant - Audiobook</option>
+                    <option value="Wai">Wai - Female (သဘာဝဆန်သော အမျိုးသမီးအသံ)</option>
+                    <option value="Pyae">Pyae - Male (အမျိုးသား အသံသန့်)</option>
+                    <option value="Phyo">Phyo - Game Coach</option>
+                    <option value="May">May - Flash Promo</option>
+                    <option value="Mya">Mya - Cooking</option>
+                    <option value="Min">Min - Education</option>
+                    <option value="Thiri">Thiri - Meditation</option>
+                    <option value="Hein">Hein - Kids</option>
+                </select>
+
+                <button onclick="processRecap()">🚀 စာသားနှင့် အသံ ထုတ်ယူမည်</button>
+                <p id="resultMsg" style="margin-top: 10px; font-size: 12px; font-weight: bold;"></p>
+            </div>
+        </div>
+
+        <!-- AUDIO STUDIO TAB -->
+        <div id="tab-studio" class="tab-content">
+            <div class="card">
+                <h2>🎙️ အသံ Studio & Clone</h2>
+                <p style="font-size: 12px;">သင့်ကိုယ်ပိုင်အသံ သို့မဟုတ် အသံအမျိုးမျိုးကို စိတ်ကြိုက်ဖန်တီးနိုင်သည်၊ မူပိုင်ခွင့် ကင်းဝေးစေရန် စီစဉ်ထားသည်။</p>
+            </div>
+        </div>
+
+        <!-- PLANS / မျှဝေမှု TAB -->
+        <div id="tab-plans" class="tab-content">
+            <div class="card">
+                <h2>💳 ပလပ်များနှင့် One-Time Token</h2>
+                <p style="font-size: 12px;">အခြားသူများအတွက် တစ်ခါသုံးသော့ (One-Time Token) များ ဖန်တီးရန်နှင့် Plan များကို ကြည့်ရှုရန်။</p>
+            </div>
+        </div>
+
+        <!-- PROFILE & HISTORY TAB -->
+        <div id="tab-profile" class="tab-content">
+            <div class="card">
+                <h2>👤 ပရိုဖိုင်နှင့် မှတ်တမ်း</h2>
+                <p id="userEmailDisplay" style="font-size: 13px; font-weight: bold; margin-bottom: 10px;"></p>
+                <h3>📦 ထုတ်ယူထားသော ဗီဒီယိုနှင့် အသံ မှတ်တမ်းများ:</h3>
+                <div id="historyList" style="margin-top: 10px;">
+                    <p style="font-size: 12px; color: #666;">မှတ်တမ်း မရှိသေးပါ။</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOTTOM NAVIGATION BAR -->
+        <div class="nav">
+            <button class="nav-item active" onclick="switchTab('home', this)">🏠<br>ပင်မစာမျက်နှာ</button>
+            <button class="nav-item" onclick="switchTab('studio', this)">🎙️<br>အသံ Studio</button>
+            <button class="nav-item" onclick="switchTab('plans', this)">💳<br>ပလပ်များ</button>
+            <button class="nav-item" onclick="switchTab('profile', this)">👤<br>ပရိုဖိုင်</button>
+        </div>
+
     </div>
 
 <script>
     const OWNER_PASSWORD = "zar200614";
+    let isOwner = false;
 
-    function checkAccess() {
-        const pass = document.getElementById('adminPassword').value.trim();
-        const status = document.getElementById('accessStatus');
-        
-        if (pass === OWNER_PASSWORD) {
-            status.style.color = "#000000";
-            status.style.fontWeight = "bold";
-            status.innerText = "✅ Owner Mode (အကန့်အသတ်မရှိ အလွတ်သုံးနိုင်သည်)";
-        } else if (pass.startsWith("TOKEN-")) {
-            status.style.color = "#000000";
-            status.innerText = "✅ One-Time Token ဖြင့် ဝင်ရောက်ထားသည်";
-        } else {
-            status.style.color = "#666666";
-            status.innerText = "ℹ️ Standard Mode (တစ်နေ့ ဗီဒီယို ၃ ထုတ်ခွင့်)";
+    function loginWithGoogle() {
+        // Gmail login simulation for UI/UX
+        let email = prompt("ကျေးဇူးပြု၍ သင့်ရဲ့ Gmail လိပ်စာကို ထည့်ပါ:");
+        if (email) {
+            localStorage.setItem("user_email", email);
+            localStorage.setItem("is_logged", "true");
+            initApp(email);
         }
     }
 
+    function verifyLogin() {
+        let pass = document.getElementById('loginPass').value.trim();
+        if (pass === OWNER_PASSWORD) {
+            isOwner = true;
+            localStorage.setItem("is_logged", "true");
+            localStorage.setItem("user_email", "Owner (zar200614)");
+            initApp("Owner (zar200614)");
+        } else if (pass.startsWith("TOKEN-")) {
+            localStorage.setItem("is_logged", "true");
+            localStorage.setItem("user_email", "Token User");
+            initApp("Token User");
+        } else {
+            document.getElementById('loginMsg').innerText = "စကားဝှက် မှားယွင်းနေပါသည်။";
+        }
+    }
+
+    function initApp(email) {
+        document.getElementById('loginScreen').style.display = 'none';
+        document.getElementById('mainApp').style.display = 'block';
+        document.getElementById('userEmailDisplay').innerText = "အကောင့်: " + email;
+        loadHistory();
+    }
+
+    function switchTab(tabName, el) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById('tab-urekap' ? '' : 'tab-' + tabName).classList.add('active');
+        document.getElementById('tab-' + tabName).classList.add('active');
+        el.classList.add('active');
+    }
+
     function processRecap() {
-        const pass = document.getElementById('adminPassword').value.trim();
         const url = document.getElementById('videoUrl').value;
         const voice = document.getElementById('voiceSelect').value;
         const msg = document.getElementById('resultMsg');
@@ -93,41 +166,59 @@
             return;
         }
 
-        // Owner စကားဝှက် zar200614 ဖြင့် ကန့်သတ်ချက်မရှိ အလွတ်သုံးခွင့်
-        if (pass === OWNER_PASSWORD) {
+        if (isOwner) {
+            saveHistory(url, voice);
             msg.style.color = "#000000";
             msg.innerText = "✅ အောင်မြင်ပါသည်။ (Owner အဖြစ် အကန့်အသတ်မရှိ ထုတ်ယူပြီးပါပြီ - Voice: " + voice + ")";
             return;
         }
 
-        // တစ်ခါသုံးသော့ (One-Time Token) ဖြင့် ဝင်ရောက်ခြင်း
-        if (pass.startsWith("TOKEN-")) {
-            msg.style.color = "#000000";
-            msg.innerText = "✅ One-Time Token ဖြင့် အောင်မြင်စွာ ထုတ်ယူပြီးပါပြီ။ (Voice: " + voice + ")";
-            return;
-        }
-
-        // သာမန်သုံးစွဲသူများအတွက် တစ်နေ့ ဗီဒီယို ၃ ကြိမ် ကန့်သတ်ချက်
+        // Standard user quota (3 videos/day)
         const today = new Date().toISOString().slice(0, 10);
         let usage = JSON.parse(localStorage.getItem('user_usage') || '{}');
-
-        if (usage.date !== today) {
-            usage = { date: today, count: 0 };
-        }
+        if (usage.date !== today) { usage = { date: today, count: 0 }; }
 
         if (usage.count >= 3) {
             msg.style.color = "#ff0000";
-            msg.innerText = "❌ ဒီနေ့အတွက် အခမဲ့ ခွဲတမ်း (ဗီဒီယို ၃ ကြိမ်) ပြည့်သွားပါပြီ။ One-Time Token သို့မဟုတ် Owner စကားဝှက် (zar200614) ထည့်ပါ။";
+            msg.innerText = "❌ ဒီနေ့အတွက် အခမဲ့ ခွဲတမ်း (ဗီဒီယို ၃ ကြိမ်) ပြည့်သွားပါပြီ။";
             return;
         }
 
         usage.count += 1;
         localStorage.setItem('user_usage', JSON.stringify(usage));
+        saveHistory(url, voice);
         msg.style.color = "#000000";
-        msg.innerText = "✅ အောင်မြင်ပါသည်။ (ဒီနေ့အတွက် သုံးစွဲမှု: " + usage.count + "/3 - Voice: " + voice + ")";
+        msg.innerText = "✅ အောင်မြင်ပါသည်။ (ဒီနေ့သုံးစွဲမှု: " + usage.count + "/3 - Voice: " + voice + ")";
+    }
+
+    function saveHistory(url, voice) {
+        let history = JSON.parse(localStorage.getItem('recap_history') || '[]');
+        history.unshift({ url: url, voice: voice, date: new Date().toLocaleString() });
+        localStorage.setItem('recap_history', JSON.stringify(history));
+        loadHistory();
+    }
+
+    function loadHistory() {
+        let history = JSON.parse(localStorage.getItem('recap_history') || '[]');
+        let container = document.getElementById('historyList');
+        if (history.length === 0) {
+            container.innerHTML = '<p style="font-size: 12px; color: #666;">မှတ်တမ်း မရှိသေးပါ။</p>';
+            return;
+        }
+        let html = '';
+        history.forEach(item => {
+            html += `<div class="history-item">🔗 <b>ལင့်ခ်:</b> ${item.url}<br>🎭 <b>အသံ:</b> ${item.voice}<br>📅 <b>အချိန်:</b> ${item.date}</div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // Check auto login
+    window.onload = function() {
+        if (localStorage.getItem("is_logged") === "true") {
+            initApp(localStorage.getItem("user_email") || "User");
+        }
     }
 </script>
 
 </body>
-            </html>
-            
+</html>
